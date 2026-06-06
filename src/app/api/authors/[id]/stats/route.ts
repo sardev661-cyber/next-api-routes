@@ -27,7 +27,12 @@ export async function GET(
       return NextResponse.json({ error: "Autor no encontrado" }, { status: 404 });
     }
 
-    const books = author.books;
+    const books = author.books as Array<{
+      title: string
+      publishedYear: number | null
+      pages: number | null
+      genre: string | null
+    }>;
     const totalBooks = books.length;
 
     if (totalBooks === 0) {
