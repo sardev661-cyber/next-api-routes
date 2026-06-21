@@ -27,12 +27,14 @@ export async function GET(
       return NextResponse.json({ error: "Autor no encontrado" }, { status: 404 });
     }
 
-    const books = author.books as Array<{
+    type Book = {
       title: string
       publishedYear: number | null
       pages: number | null
       genre: string | null
-    }>;
+    };
+
+    const books = author.books as Book[];
     const totalBooks = books.length;
 
     if (totalBooks === 0) {
@@ -52,24 +54,24 @@ export async function GET(
     const firstBook = books[0];
     const latestBook = books[books.length - 1];
 
-    const booksWithPages = books.filter((b) => b.pages !== null);
+    const booksWithPages = books.filter((b: Book) => b.pages !== null);
     const averagePages =
       booksWithPages.length > 0
         ? Math.round(
-            booksWithPages.reduce((sum, b) => sum + (b.pages ?? 0), 0) /
+            booksWithPages.reduce((sum: number, b: Book) => sum + (b.pages ?? 0), 0) /
               booksWithPages.length
           )
         : 0;
 
-    const genres = [...new Set(books.map((b) => b.genre).filter(Boolean))];
+    const genres = [...new Set(books.map((b: Book) => b.genre).filter(Boolean))];
 
     const longestBook = booksWithPages.reduce(
-      (max, b) => (b.pages! > (max?.pages ?? -Infinity) ? b : max),
+      (max: Book | undefined, b: Book) => (b.pages! > (max?.pages ?? -Infinity) ? b : max),
       booksWithPages[0]
     );
 
     const shortestBook = booksWithPages.reduce(
-      (min, b) => (b.pages! < (min?.pages ?? Infinity) ? b : min),
+      (min: Book | undefined, b: Book) => (b.pages! < (min?.pages ?? Infinity) ? b : min),
       booksWithPages[0]
     );
 
