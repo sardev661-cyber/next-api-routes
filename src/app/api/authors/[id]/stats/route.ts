@@ -58,9 +58,9 @@ export async function GET(
     const averagePages =
       booksWithPages.length > 0
         ? Math.round(
-            booksWithPages.reduce((sum: number, b: Book) => sum + (b.pages ?? 0), 0) /
-              booksWithPages.length
-          )
+          booksWithPages.reduce((sum: number, b: Book) => sum + (b.pages ?? 0), 0) /
+          booksWithPages.length
+        )
         : 0;
 
     const genres = [...new Set(books.map((b: Book) => b.genre).filter(Boolean))];
