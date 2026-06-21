@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const allowedSortFields = ["title", "publishedYear", "createdAt"];
     const sortBy = allowedSortFields.includes(sortByParam) ? sortByParam : "createdAt";
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (search) {
       where.title = { contains: search, mode: "insensitive" };

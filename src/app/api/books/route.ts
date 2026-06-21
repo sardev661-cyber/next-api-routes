@@ -100,8 +100,9 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(book, { status: 201 })
-  } catch (error: any) {
-    if (error.code === 'P2002') {
+  } catch (error: unknown) {
+    const err = error as { code?: string }
+    if (err.code === 'P2002') {
       return NextResponse.json(
         { error: 'El ISBN ya existe' },
         { status: 409 }

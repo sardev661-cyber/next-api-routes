@@ -97,14 +97,15 @@ export async function PUT(
     })
 
     return NextResponse.json(book)
-  } catch (error: any) {
-    if (error.code === 'P2025') {
+  } catch (error: unknown) {
+    const err = error as { code?: string }
+    if (err.code === 'P2025') {
       return NextResponse.json(
         { error: 'Libro no encontrado' },
         { status: 404 }
       )
     }
-    if (error.code === 'P2002') {
+    if (err.code === 'P2002') {
       return NextResponse.json(
         { error: 'El ISBN ya existe' },
         { status: 409 }
@@ -132,8 +133,9 @@ export async function DELETE(
     return NextResponse.json({
       message: 'Libro eliminado correctamente'
     })
-  } catch (error: any) {
-    if (error.code === 'P2025') {
+  } catch (error: unknown) {
+    const err = error as { code?: string }
+    if (err.code === 'P2025') {
       return NextResponse.json(
         { error: 'Libro no encontrado' },
         { status: 404 }
