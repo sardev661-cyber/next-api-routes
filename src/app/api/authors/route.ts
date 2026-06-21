@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         { status: 409 }
       )
     }
-    
+
     console.log(error);
     return NextResponse.json(
       { error: 'Error al crear autor' },
