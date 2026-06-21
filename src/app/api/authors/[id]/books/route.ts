@@ -37,7 +37,7 @@ export async function GET(
       totalBooks: books.length,
       books
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Error al obtener libros del autor' },
       { status: 500 }

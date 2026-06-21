@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -35,6 +35,10 @@ interface AuthorStats {
   shortestBook: { title: string; pages: number } | null;
 }
 
+interface AuthorBooksResponse {
+  books: Book[];
+}
+
 const GENRES = [
   "Novela", "Cuento", "Poesía", "Ensayo", "Biografía",
   "Historia", "Ciencia ficción", "Periodismo", "Drama", "Otro",
@@ -65,7 +69,8 @@ export default function AuthorDetailPage() {
   const [savingBook, setSavingBook] = useState(false);
   const [bookFormError, setBookFormError] = useState("");
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
+    await Promise.resolve();
     setLoading(true);
     try {
       const [authorRes, booksRes, statsRes] = await Promise.all([
@@ -76,14 +81,14 @@ export default function AuthorDetailPage() {
 
       if (!authorRes.ok) { setError("Autor no encontrado"); setLoading(false); return; }
 
-      const [authorData, booksData, statsData] = await Promise.all([
+      const [authorData, booksData, statsData]: [Author, AuthorBooksResponse, AuthorStats] = await Promise.all([
         authorRes.json(),
         booksRes.json(),
         statsRes.json(),
       ]);
 
       setAuthor(authorData);
-      setBooks(booksData);
+      setBooks(booksData.books);
       setStats(statsData);
       setAuthorForm({
         name: authorData.name,
@@ -97,9 +102,15 @@ export default function AuthorDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  useEffect(() => { fetchAll(); }, [id]);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      void fetchAll();
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [fetchAll]);
 
   const handleSaveAuthor = async () => {
     setSavingAuthor(true);

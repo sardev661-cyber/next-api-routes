@@ -24,7 +24,7 @@ export async function GET(
     }
 
     return NextResponse.json(book)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Error al obtener libro' },
       { status: 500 }

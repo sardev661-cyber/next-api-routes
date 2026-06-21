@@ -31,7 +31,7 @@ export async function GET(
     }
 
     return NextResponse.json(author)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Error al obtener autor' },
       { status: 500 }

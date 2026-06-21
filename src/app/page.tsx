@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
 interface Author {
@@ -19,6 +19,10 @@ interface Stats {
   genres: string[];
 }
 
+interface BookSummary {
+  genre: string | null;
+}
+
 export default function DashboardPage() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -35,27 +39,38 @@ export default function DashboardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    await Promise.resolve();
     setLoading(true);
     try {
       const res = await fetch("/api/authors");
-      const data = await res.json();
+      const data: Author[] = await res.json();
       setAuthors(data);
 
       const booksRes = await fetch("/api/books");
-      const books = await booksRes.json();
-      const genres = [...new Set<string>(books.map((b: any) => b.genre).filter(Boolean))];
+      const books: BookSummary[] = await booksRes.json();
+      const genres = [
+        ...new Set(
+          books
+            .map((book) => book.genre)
+            .filter((genre): genre is string => Boolean(genre))
+        ),
+      ];
       setStats({ totalAuthors: data.length, totalBooks: books.length, genres });
     } catch {
       setError("Error al cargar datos");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const timeout = setTimeout(() => {
+      void fetchData();
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [fetchData]);
 
   const resetForm = () => {
     setForm({ name: "", email: "", nationality: "", birthYear: "", bio: "" });

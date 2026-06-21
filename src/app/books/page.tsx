@@ -67,6 +67,7 @@ export default function BooksPage() {
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchBooks = useCallback(async () => {
+    await Promise.resolve();
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -90,7 +91,11 @@ export default function BooksPage() {
   }, [search, genre, authorFilter, page, sortBy, order]);
 
   useEffect(() => {
-    fetchBooks();
+    const timeout = setTimeout(() => {
+      void fetchBooks();
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [fetchBooks]);
 
   useEffect(() => {
